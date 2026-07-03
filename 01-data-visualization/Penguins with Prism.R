@@ -2,6 +2,8 @@ library(tidyverse)
 library(palmerpenguins)
 library(ggprism)
 library(camcorder)
+library(readxl)
+library(plotly)
 
 ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
   geom_point(mapping = aes(color = species, shape = species)) +
