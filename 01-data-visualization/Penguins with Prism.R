@@ -1,6 +1,7 @@
 library(tidyverse)
 library(palmerpenguins)
 library(ggprism)
+library(camcorder)
 
 ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
   geom_point(mapping = aes(color = species, shape = species)) +
@@ -131,6 +132,7 @@ ggplot(penguins, aes(x = body_mass_g, color = species, fill = species)) +
   theme_prism(base_size = 14) +
   scale_fill_prism(palette = "prism_light") +
   scale_color_prism(palette = "prism_light")
+
 ggsave(
   filename = "01-data-visualization/plots/Mass of Different Penguin Species.png",
   width = 8,
