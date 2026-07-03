@@ -153,3 +153,13 @@ ggplot(
 ) +
   geom_point() +
   facet_wrap(~island)
+
+
+p <- ggplot(
+  penguins,
+  aes(x = bill_length_mm, y = bill_depth_mm, color = species)
+) +
+  geom_point()
+
+# Convert it to an interactive web widget
+ggplotly(p)
