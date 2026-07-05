@@ -162,6 +162,7 @@ p <- ggplot(
   aes(x = bill_length_mm, y = bill_depth_mm, color = species)
 ) +
   geom_point()
+theme_prism(base_size = 14)
 
 # Convert it to an interactive web widget
 ggplotly(p)
