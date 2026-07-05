@@ -154,3 +154,39 @@ flights |>
   arrange(desc(dep_delay)) |>
   group_by(dep_delay) |>
   summarize()
+
+# Find all unique origin and destination pairs
+# This will return only columns that are included as arguments in distinct()
+# Unless you do .keep_all = TRUE
+
+flights |>
+  distinct(origin, dest)
+
+
+flights |>
+  count(origin, dest, sort = TRUE) #having sort set to TRUE will automatically arrange in descending order of the # occurances
+
+#> Exercises
+#> 1. In a single pipeline for each condition, find all flights that meet the condition:
+# Had an arrival delay of two or more hours
+# Flew to Houston (IAH or HOU)
+# Were operated by United, American, or Delta
+# Departed in summer (July, August, and September)
+# Arrived more than two hours late but didn’t leave late
+# Were delayed by at least an hour, but made up over 30 minutes in flight
+
+flights |>
+  filter(
+    arr_delay > 120 |
+      dest %in% c("IAH", "HOU") |
+      carrier %in% c("UA", "AA", "DL") |
+      month %in% c(7, 8, 9) |
+      (arr_delay > 120 & dep_delay <= 0) |
+      (dep_delay >= 60 & (dep_delay - arr_delay) > 30)
+  )
+
+
+# Sort flights to find flights with longest departure delays. Find flights that left earliest in the morning
+
+flights |>
+  arrange(desc(dep_delay))
