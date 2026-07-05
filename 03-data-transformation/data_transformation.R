@@ -114,3 +114,43 @@ ggplot(plane_traffic_speeds, aes(x = month, y = mean_speed, color = origin)) +
   ) +
   theme_prism(base_size = 14) +
   theme(legend.title = element_text())
+
+
+# Filtering flights that left on January 1, regardless of the year
+
+flights |>
+  filter(month == 1 & day == 1)
+
+# Filtering flights that left either in January or Februrary
+
+flights |>
+  filter(month == 1 | month == 2)
+
+# Shorcut when combining |> pipe and OR statement ( | )
+
+flights |>
+  filter(month %in% c(1, 2))
+
+jan1_flights <- flights |>
+  filter(month == 1 & day == 1)
+
+flights |>
+  select(year, month, day, dep_time) |>
+  arrange(year, month, day, dep_time)
+
+flights |>
+  arrange(year, month, day, dep_time)
+
+# following code sorts by the departure time,
+# which is spread over four columns. We get the earliest years first, then within a year, the earliest months, etc.
+# Then, this will group the following variables (year, month, day, dep_time) and output
+
+flights |>
+  select(year, month, day, dep_delay) |>
+  arrange(desc(dep_delay))
+
+
+flights |>
+  arrange(desc(dep_delay)) |>
+  group_by(dep_delay) |>
+  summarize()
