@@ -132,8 +132,8 @@ ggplot(
 ) +
   geom_density(alpha = 0.5) +
   labs(
-    title = "Mean Intensity of Cluster vs. NonCluster Plastics",
-    x = "Mean Intensity",
+    title = "Max Intensity of Cluster vs. NonCluster Plastics",
+    x = "Max Intensity",
     y = "Freq"
   ) +
   theme_prism(base_size = 14) +
@@ -148,8 +148,8 @@ ggplot(
 ) +
   geom_density(alpha = 0.5) +
   labs(
-    title = "Mean Intensity of Cluster vs. NonCluster Plastics",
-    x = "Mean Intensity",
+    title = "Voxels of Cluster vs. NonCluster Plastics",
+    x = "Voxel",
     y = "Freq"
   ) +
   theme_prism(base_size = 14) +
