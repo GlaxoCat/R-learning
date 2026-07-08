@@ -3,18 +3,34 @@ library(tidyverse)
 library(ggplot2)
 library(dplyr)
 library(readxl)
+library(here)
 
-process_image_data <- function(image_prefix){
-  cluster_center <- read_excel(paste0(image_prefix, "_Cluster_Plastics_GFP_CenterIntensity.xlsx"), skip = 1) %>%
-  select(ID, Center_Intensity = `Intensity Center`)
+process_image_data <- function(image_prefix) {
+  
+  # here() tells R: "Start at the root project directory, 
+  # look inside 'Imaris_Data', and find this file."
+  cluster_center <- read_excel(
+    here("Imaris_Data", paste0(image_prefix, "_Cluster_Plastics_GFP_CenterIntensity.xlsx")), 
+    skip = 1
+  ) %>%
+    select(ID, Center_Intensity = `Intensity Center`)
 
-  cluster_max <- read_excel(paste0(image_prefix, "_Cluster_Plastics_GFP_MaxIntensity.xlsx"), skip = 1) %>%
+  cluster_max <- read_excel(
+    here("Imaris_Data", paste0(image_prefix, "_Cluster_Plastics_GFP_MaxIntensity.xlsx")), 
+    skip = 1
+  ) %>%
     select(ID, Max_Intensity = `Intensity Max`)
 
-  cluster_mean <- read_excel(paste0(image_prefix, "_Cluster_Plastics_GFP_MeanIntensity.xlsx"), skip = 1) %>%
+  cluster_mean <- read_excel(
+    here("Imaris_Data", paste0(image_prefix, "_Cluster_Plastics_GFP_MeanIntensity.xlsx")), 
+    skip = 1
+  ) %>%
     select(ID, Mean_Intensity = `Intensity Mean`)
 
-  cluster_voxel <- read_excel(paste0(image_prefix, "_Cluster_Plastics_GFP_Voxel.xlsx"), skip = 1) %>%
+  cluster_voxel <- read_excel(
+    here("Imaris_Data", paste0(image_prefix, "_Cluster_Plastics_GFP_Voxel.xlsx")), 
+    skip = 1
+  ) %>%
     select(ID, Voxel = `Number of Voxels`)
 
   cluster_tidy <- cluster_center %>%
@@ -26,18 +42,29 @@ process_image_data <- function(image_prefix){
       Spot_Category = "Cluster"
     )
 
-  # Same Process for Non-cluster plastics
-
-  noncluster_center <- read_excel(paste0(image_prefix, "_NonCluster_Plastics_GFP_CenterIntensity.xlsx"), skip = 1) %>%
-      select(ID, Center_Intensity = `Intensity Center`)
+  # --- Same Process for Non-cluster plastics ---
+  noncluster_center <- read_excel(
+    here("Imaris_Data", paste0(image_prefix, "_NonCluster_Plastics_GFP_CenterIntensity.xlsx")), 
+    skip = 1
+  ) %>%
+    select(ID, Center_Intensity = `Intensity Center`)
     
-  noncluster_max <- read_excel(paste0(image_prefix, "_NonCluster_Plastics_GFP_MaxIntensity.xlsx"), skip = 1) %>%
+  noncluster_max <- read_excel(
+    here("Imaris_Data", paste0(image_prefix, "_NonCluster_Plastics_GFP_MaxIntensity.xlsx")), 
+    skip = 1
+  ) %>%
     select(ID, Max_Intensity = `Intensity Max`)
 
-  noncluster_mean <- read_excel(paste0(image_prefix, "_NonCluster_Plastics_GFP_MeanIntensity.xlsx"), skip = 1) %>%
+  noncluster_mean <- read_excel(
+    here("Imaris_Data", paste0(image_prefix, "_NonCluster_Plastics_GFP_MeanIntensity.xlsx")), 
+    skip = 1
+  ) %>%
     select(ID, Mean_Intensity = `Intensity Mean`)
 
-  noncluster_voxel <- read_excel(paste0(image_prefix, "_NonCluster_Plastics_GFP_Voxel.xlsx"), skip = 1) %>%
+  noncluster_voxel <- read_excel(
+    here("Imaris_Data", paste0(image_prefix, "_NonCluster_Plastics_GFP_Voxel.xlsx")), 
+    skip = 1
+  ) %>%
     select(ID, Voxel = `Number of Voxels`)
 
   noncluster_tidy <- noncluster_center %>%
