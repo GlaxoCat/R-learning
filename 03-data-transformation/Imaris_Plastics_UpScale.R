@@ -209,3 +209,55 @@ ggplot(
 # # ==========================================
 # # This comment is a test for commit and ammend
 # # ==========================================
+
+# # ==========================================
+# # Looking at noncluster plastic distribution only
+# # ==========================================
+
+final_table %>%
+  filter(Spot_Category == "Non cluster") %>%
+  ggplot(aes(x = Mean_Intensity, fill = Image_ID)) +
+  geom_density(alpha = 0.5) +
+  labs(
+    title = "Noncluster Plastics Distribution across Images",
+    x = "Mean Intensity",
+    y = "Freq"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light")
+
+# # ==========================================
+# # Looking at noncluster plastic distribution with boxplot
+# # ==========================================
+
+final_table %>%
+  filter(Spot_Category == "Non cluster") %>%
+  ggplot(aes(x = Image_ID, y = Mean_Intensity)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
+  labs(
+    title = "Noncluster Plastics Distribution Across Images",
+    x = "Mean Intensity",
+    y = "Freq"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light")
+
+# # ==========================================
+# # Looking at noncluster plastic distribution with violin plot
+# # ==========================================
+
+final_table %>%
+  filter(Spot_Category == "Non cluster") %>%
+  ggplot(aes(x = Image_ID, y = Mean_Intensity)) +
+  geom_violin(alpha = 0.7, quantile.linetype = 3L) +
+  labs(
+    title = "Noncluster Plastics Distribution Across Images",
+    x = "Mean Intensity",
+    y = "Freq"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light")
