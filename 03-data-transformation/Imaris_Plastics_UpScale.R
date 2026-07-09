@@ -306,7 +306,11 @@ final_table %>%
   scale_fill_prism(palette = "prism_light") +
   scale_color_prism(palette = "prism_light")
 
-
+voxel_compares <- list(
+  c("image1", "image14"),
+  c("image1", "image28"),
+  c("image14", "image28")
+)
 final_table %>%
   ggplot(aes(x = Image_ID, y = Voxel, fill = Image_ID, color = Image_ID)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.6) +
@@ -319,7 +323,12 @@ final_table %>%
   ) +
   theme_prism(base_size = 14) +
   scale_fill_prism(palette = "prism_light") +
-  scale_color_prism(palette = "prism_light")
+  scale_color_prism(palette = "prism_light") +
+  stat_compare_means(
+    comparisons = voxel_compares,
+    method = "t.test",
+    label = "p.signif"
+  )
 
 
 # # ==========================================
@@ -402,3 +411,9 @@ final_table %>%
     method = "t.test",
     label = "p.format.signif"
   )
+
+#
+
+# # ==========================================
+# # Commit amend for task 3 (last stage that I made)
+# # ==========================================

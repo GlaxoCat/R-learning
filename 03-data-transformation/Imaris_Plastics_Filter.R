@@ -163,3 +163,7 @@ final_table %>%
 final_table %>%
   filter(Spot_Category == "Non cluster") %>%
   filter(Mean_Intensity < 150)
+
+# # ==========================================
+# # Test to work on learning how to properly stage and commit changes this is task 2!
+# # ==========================================
