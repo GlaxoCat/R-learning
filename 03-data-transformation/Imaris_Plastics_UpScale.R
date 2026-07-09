@@ -4,6 +4,8 @@ library(ggplot2)
 library(dplyr)
 library(readxl)
 library(here)
+library(ggsignif)
+library(ggpubr)
 
 process_image_data <- function(image_prefix) {
   # here() tells R: "Start at the root project directory,
@@ -227,6 +229,7 @@ final_table %>%
   scale_fill_prism(palette = "prism_light") +
   scale_color_prism(palette = "prism_light")
 
+
 # # ==========================================
 # # Looking at noncluster plastic distribution with boxplot
 # # ==========================================
@@ -261,3 +264,116 @@ final_table %>%
   theme_prism(base_size = 14) +
   scale_fill_prism(palette = "prism_light") +
   scale_color_prism(palette = "prism_light")
+
+# # ==========================================
+# # Looking at cluster plastic distribution with boxplot - center intensity (quality)
+# # ==========================================
+
+final_table %>%
+  filter(Spot_Category == "Cluster") %>%
+  ggplot(aes(
+    x = Image_ID,
+    y = Center_Intensity,
+    fill = Image_ID,
+    color = Image_ID
+  )) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) + # width = how far apart individual spots are, alpha = how visible, size = how big
+  labs(
+    title = "Cluster Plastics Distribution across Images",
+    x = "Quality",
+    y = "freq"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light")
+
+# # ==========================================
+# # Looking at cluster plastic distribution with boxplot - Voxels
+# # ==========================================
+
+final_table %>%
+  filter(Spot_Category == "Cluster") %>%
+  ggplot(aes(x = Image_ID, y = Voxel, fill = Image_ID, color = Image_ID)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
+  labs(
+    title = "Cluster Plastics Distribution across Images",
+    x = "Voxel",
+    y = "freq"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light")
+
+
+final_table %>%
+  ggplot(aes(x = Image_ID, y = Voxel, fill = Image_ID, color = Image_ID)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
+  facet_wrap(~Spot_Category) +
+  labs(
+    title = "Plastics Distribution across Images",
+    x = "Voxel",
+    y = "freq"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light")
+
+
+# # ==========================================
+# # Image 1 Voxel Comparison Cluster vs. Noncluster
+# # ==========================================
+
+final_table %>%
+  filter(Image_ID == "image1") %>%
+  ggplot(aes(x = Spot_Category, y = Voxel)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
+  labs(
+    title = "Cluster vs. NonCluster Voxel in Image 1",
+    x = "Spot Category",
+    y = "Voxel"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light")
+
+
+# # ==========================================
+# # Cluster plastics comparison across images WITH SIGNIFICANCE BARS
+# # ==========================================
+
+image_comparisons <- list(
+  c("image14", "image28"),
+  c("image1", "image14"),
+  c("image1", "image28")
+)
+
+final_table %>%
+  filter(Spot_Category == "Cluster") %>%
+  ggplot(aes(
+    x = Image_ID,
+    y = Center_Intensity,
+    fill = Image_ID,
+    color = Image_ID
+  )) +
+  #stat_boxplot(geom = "errorbar", width = 0.2, lwd = 0.8, color = "black") +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) + # width = how far apart individual spots are, alpha = how visible, size = how big
+  labs(
+    title = "Cluster Plastics Distribution across Images",
+    x = "Quality",
+    y = "freq"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light") +
+  theme(legend.position = "none") + # This removes the legend altogether
+
+  stat_compare_means(
+    comparisons = image_comparisons,
+    method = "t.test",
+    label = "p.signif"
+  )
