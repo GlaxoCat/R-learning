@@ -8,7 +8,7 @@ format:
 editor: visual
 ---
 
-``` {r}
+```{r}
 #| label: load-packages
 #| include: false
 
@@ -137,19 +137,17 @@ final_table <- final_table %>%
   ))
 ```
 
+# Imaris Fluorescence Metric Comparison
 
-# Imaris Fluorescence Metric Comparison 
-
-The following is a comprehensive breakdown of fluorescence intensity metrics, including quality, mean intensity, max intensity, and voxels. The intent is to compare at two levels - cluster and non-cluster plastics, and across different images as well. 
+The following is a comprehensive breakdown of fluorescence intensity metrics, including quality, mean intensity, max intensity, and voxels. The intent is to compare at two levels - cluster and non-cluster plastics, and across different images as well.
 
 ## The Goal
 
-The intent is to be able to visualize these metrics so that a (somewhat) universal filter can be established to help quantify plastic uptake in the CHT, while also excluding out clustered plastics that may result from macrophage uptake. 
+The intent is to be able to visualize these metrics so that a (somewhat) universal filter can be established to help quantify plastic uptake in the CHT, while also excluding out clustered plastics that may result from macrophage uptake.
 
 All source code for the following analysis scripts can be found [**here**](https://github.com/GlaxoCat/R-learning/tree/main)
 
-
-``` {r}
+```{r}
 #| label: plot-cluster-plastic-voxel-distribution 
 #| message: false
 #| warning: false
@@ -184,8 +182,7 @@ final_table %>%
 
 If we zoom in to Image 1 - which is a *kdrl:mCherry - stab2 crispant* zebrafish injected with **50nm plastics**, the voxel comparison looks like the following:
 
-
-``` {r}
+```{r}
 #| label: plot-cluster-noncluster-voxel-distribution-image1
 #| message: false
 #| warning: false
@@ -222,7 +219,7 @@ final_table %>%
 
 If we put these comparisons together side by side, we then observe the voxel differences between the two:
 
-``` {r}
+```{r}
 #| label: plot-adjacent
 #| fig-subcap:
 #| - "Voxels per spot for clustered plastics across all images"
@@ -283,6 +280,3 @@ final_table %>%
   )
 
 ```
-
-
-
