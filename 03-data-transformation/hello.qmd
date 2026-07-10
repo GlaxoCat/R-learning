@@ -1,0 +1,76 @@
+---
+title: "Hello, Quarto"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(tidyverse)
+library(palmerpenguins)
+library(ggprism)
+```
+
+## Meet Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Meet the penguins
+
+![](https://raw.githubusercontent.com/quarto-dev/quarto-web/main/docs/get-started/hello/rstudio/lter_penguins.png){style="float:right;" fig-alt="Illustration of three species of Palmer Archipelago penguins: Chinstrap, Gentoo, and Adelie. Artwork by @allison_horst." width="401"}
+
+The `penguins` data from the [**palmerpenguins**](https://allisonhorst.github.io/palmerpenguins "palmerpenguins R package") package contains size measurements for `{r} nrow(penguins)` penguins from three species observed on three islands in the Palmer Archipelago, Antarctica.
+
+The plot below shows the relationship between flipper and bill lengths of these penguins.
+
+```{r}
+#| label: plot-penguins
+#| warning: false
+#| echo: false 
+# Echo toggles whether the code will actually show in the markdown doucment or not
+
+ggplot(penguins, 
+       aes(x = flipper_length_mm, y = bill_length_mm)) +
+  geom_point(aes(color = species, shape = species)) +
+  scale_color_manual(values = c("darkorange","purple","cyan4")) +
+  labs(
+    title = "Flipper and bill length",
+    subtitle = "Dimensions for penguins at Palmer Station LTER",
+    x = "Flipper length (mm)", y = "Bill length (mm)",
+    color = "Penguin species", shape = "Penguin species"
+  ) +
+  theme_minimal()
+```
+
+## How do the body mass and flipper lengths correlate with one another?
+
+If we look at the Adelie, Chinstrap, and Gentoo Penguins, we observe their body mass and flipper length to identify any possible correlations between these two measurements. A graphical analysis reveals that they do indeed follow a roughly positively linear correlation. Of note, bill depth also seems to decrease as flipper length and body mass increase.
+
+```{r}
+#| label: plot-flipper-bodyMass-final
+#| warning: false
+#| echo: true
+
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  # 1. Put labs() right up front
+  labs(
+    title = "Body mass and flipper length",
+    x = "Flipper Length (mm)",
+    y = "Body mass (g)"
+  ) +
+  geom_point(mapping = aes(color = bill_depth_mm), size = 2) +
+  geom_smooth(color = "black", se = FALSE) +
+  # 2. Define names inside continuous scales so they aren't erased
+  scale_color_continuous(
+    palette = "viridis",
+    name = "Bill Depth (mm)"
+  ) +
+  # 3. Add themes last
+  theme_prism(base_size = 14) +
+  theme(legend.title = element_text())
+
+```
+
+Here, we can see that

@@ -334,10 +334,16 @@ final_table %>%
 # # ==========================================
 # # Image 1 Voxel Comparison Cluster vs. Noncluster
 # # ==========================================
+voxel_image1_compare <- list(c("Cluster", "Non cluster"))
 
 final_table %>%
-  filter(Image_ID == "image1") %>%
-  ggplot(aes(x = Spot_Category, y = Voxel)) +
+  filter(Image_ID == "Image 1") %>%
+  ggplot(aes(
+    x = Spot_Category,
+    y = Voxel,
+    color = Spot_Category,
+    fill = Spot_Category
+  )) +
   geom_boxplot(outlier.shape = NA, alpha = 0.6) +
   geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
   labs(
@@ -347,7 +353,12 @@ final_table %>%
   ) +
   theme_prism(base_size = 14) +
   scale_fill_prism(palette = "prism_light") +
-  scale_color_prism(palette = "prism_light")
+  scale_color_prism(palette = "prism_light") +
+  stat_compare_means(
+    comparisons = voxel_image1_compare,
+    method = "t.test",
+    label = "p.signif"
+  )
 
 
 # # ==========================================

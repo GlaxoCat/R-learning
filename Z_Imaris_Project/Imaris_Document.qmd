@@ -1,0 +1,288 @@
+---
+title: "Imaris Analysis Comparison of Cluster vs. Non-Cluster Plastic Fluorescence Metrics"
+format: 
+    html:
+        code-fold: true
+        code-tools: true
+        fig-align: center
+editor: visual
+---
+
+``` {r}
+#| label: load-packages
+#| include: false
+
+library(ggprism)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(readxl)
+library(here)
+library(ggsignif)
+library(ggpubr)
+```
+
+```{r}
+#| label: load-data
+#| include: false
+process_image_data <- function(image_prefix) {
+  # here() tells R: "Start at the root project directory,
+  # look inside 'Imaris_Data', and find this file."
+  cluster_center <- read_excel(
+    here(
+      "Imaris_Data",
+      paste0(image_prefix, "_Cluster_Plastics_GFP_CenterIntensity.xlsx")
+    ),
+    skip = 1
+  ) %>%
+    select(ID, Center_Intensity = `Intensity Center`)
+
+  cluster_max <- read_excel(
+    here(
+      "Imaris_Data",
+      paste0(image_prefix, "_Cluster_Plastics_GFP_MaxIntensity.xlsx")
+    ),
+    skip = 1
+  ) %>%
+    select(ID, Max_Intensity = `Intensity Max`)
+
+  cluster_mean <- read_excel(
+    here(
+      "Imaris_Data",
+      paste0(image_prefix, "_Cluster_Plastics_GFP_MeanIntensity.xlsx")
+    ),
+    skip = 1
+  ) %>%
+    select(ID, Mean_Intensity = `Intensity Mean`)
+
+  cluster_voxel <- read_excel(
+    here(
+      "Imaris_Data",
+      paste0(image_prefix, "_Cluster_Plastics_GFP_Voxel.xlsx")
+    ),
+    skip = 1
+  ) %>%
+    select(ID, Voxel = `Number of Voxels`)
+
+  cluster_tidy <- cluster_center %>%
+    left_join(cluster_max, by = "ID") %>%
+    left_join(cluster_mean, by = "ID") %>%
+    left_join(cluster_voxel, by = "ID") %>%
+    mutate(
+      Image_ID = image_prefix,
+      Spot_Category = "Cluster"
+    )
+
+  # --- Same Process for Non-cluster plastics ---
+  noncluster_center <- read_excel(
+    here(
+      "Imaris_Data",
+      paste0(image_prefix, "_NonCluster_Plastics_GFP_CenterIntensity.xlsx")
+    ),
+    skip = 1
+  ) %>%
+    select(ID, Center_Intensity = `Intensity Center`)
+
+  noncluster_max <- read_excel(
+    here(
+      "Imaris_Data",
+      paste0(image_prefix, "_NonCluster_Plastics_GFP_MaxIntensity.xlsx")
+    ),
+    skip = 1
+  ) %>%
+    select(ID, Max_Intensity = `Intensity Max`)
+
+  noncluster_mean <- read_excel(
+    here(
+      "Imaris_Data",
+      paste0(image_prefix, "_NonCluster_Plastics_GFP_MeanIntensity.xlsx")
+    ),
+    skip = 1
+  ) %>%
+    select(ID, Mean_Intensity = `Intensity Mean`)
+
+  noncluster_voxel <- read_excel(
+    here(
+      "Imaris_Data",
+      paste0(image_prefix, "_NonCluster_Plastics_GFP_Voxel.xlsx")
+    ),
+    skip = 1
+  ) %>%
+    select(ID, Voxel = `Number of Voxels`)
+
+  noncluster_tidy <- noncluster_center %>%
+    left_join(noncluster_max, by = "ID") %>%
+    left_join(noncluster_mean, by = "ID") %>%
+    left_join(noncluster_voxel, by = "ID") %>%
+    mutate(Image_ID = image_prefix, Spot_Category = "Non cluster")
+
+  # # ==========================================
+  # # 3. SMASH TOGETHER INTO THE MASTER DATASET
+  # # ==========================================
+  master_tidy_spots <- bind_rows(cluster_tidy, noncluster_tidy)
+}
+
+# Read only the ID and the raw metric from each independent file
+# List all your image prefixes
+image_list <- c("image1", "image14", "image28")
+
+# Read and combine everything automatically
+final_table <- map_df(image_list, process_image_data)
+
+final_table <- final_table %>%
+  mutate(Image_ID = recode(Image_ID,
+    "image1"  = "Image 1",
+    "image14" = "Image 14",
+    "image28" = "Image 28"
+  ))
+```
+
+
+# Imaris Fluorescence Metric Comparison 
+
+The following is a comprehensive breakdown of fluorescence intensity metrics, including quality, mean intensity, max intensity, and voxels. The intent is to compare at two levels - cluster and non-cluster plastics, and across different images as well. 
+
+## The Goal
+
+The intent is to be able to visualize these metrics so that a (somewhat) universal filter can be established to help quantify plastic uptake in the CHT, while also excluding out clustered plastics that may result from macrophage uptake. 
+
+All source code for the following analysis scripts can be found [**here**](https://github.com/GlaxoCat/R-learning/tree/main)
+
+
+``` {r}
+#| label: plot-cluster-plastic-voxel-distribution 
+#| message: false
+#| warning: false
+#| fig-cap: "Voxels per spot for clustered plastics across images"
+#| fig-width: 9
+#| fig-height: 6
+
+voxel_compares <- list(
+  c("Image 1", "Image 14"),
+  c("Image 1", "Image 28"),
+  c("Image 14", "Image 28")
+)
+final_table %>%
+  ggplot(aes(x = Image_ID, y = Voxel, fill = Image_ID, color = Image_ID)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
+  facet_wrap(~Spot_Category) +
+  labs(
+    title = "Plastics Distribution across Images",
+    x = "Voxel",
+    y = "freq"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light") +
+  stat_compare_means(
+    comparisons = voxel_compares,
+    method = "t.test",
+    label = "p.signif"
+  )
+```
+
+If we zoom in to Image 1 - which is a *kdrl:mCherry - stab2 crispant* zebrafish injected with **50nm plastics**, the voxel comparison looks like the following:
+
+
+``` {r}
+#| label: plot-cluster-noncluster-voxel-distribution-image1
+#| message: false
+#| warning: false
+#| fig-cap: "Voxels per spot for clustered vs. nonclustered plastics in Image 1"
+#| fig-width: 9
+#| fig-height: 6
+voxel_image1_compare <- list(c("Cluster", "Non cluster"))
+
+final_table %>%
+  filter(Image_ID == "Image 1") %>%
+  ggplot(aes(
+    x = Spot_Category,
+    y = Voxel,
+    color = Spot_Category,
+    fill = Spot_Category
+  )) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
+  labs(
+    title = "Cluster vs. NonCluster Voxel in Image 1",
+    x = "Spot Category",
+    y = "Voxel"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light") +
+  stat_compare_means(
+    comparisons = voxel_image1_compare,
+    method = "t.test",
+    label = "p.signif"
+  )
+
+```
+
+If we put these comparisons together side by side, we then observe the voxel differences between the two:
+
+``` {r}
+#| label: plot-adjacent
+#| fig-subcap:
+#| - "Voxels per spot for clustered plastics across all images"
+#| - "Voxels per spot for clustered vs. non-clustered within Image 1"
+#| layout-ncol: 2
+#| column: page
+#| fig-width: 9
+#| fig-height: 6
+
+voxel_compares <- list(
+  c("Image 1", "Image 14"),
+  c("Image 1", "Image 28"),
+  c("Image 14", "Image 28")
+)
+final_table %>%
+  ggplot(aes(x = Image_ID, y = Voxel, fill = Image_ID, color = Image_ID)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
+  facet_wrap(~Spot_Category) +
+  labs(
+    title = "Plastics Distribution across Images",
+    x = "Voxel",
+    y = "freq"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light") +
+  stat_compare_means(
+    comparisons = voxel_compares,
+    method = "t.test",
+    label = "p.signif"
+  )
+
+voxel_image1_compare <- list(c("Cluster", "Non cluster"))
+
+final_table %>%
+  filter(Image_ID == "Image 1") %>%
+  ggplot(aes(
+    x = Spot_Category,
+    y = Voxel,
+    color = Spot_Category,
+    fill = Spot_Category
+  )) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
+  labs(
+    title = "Cluster vs. NonCluster Voxel in Image 1",
+    x = "Spot Category",
+    y = "Voxel"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light") +
+  stat_compare_means(
+    comparisons = voxel_image1_compare,
+    method = "t.test",
+    label = "p.signif"
+  )
+
+```
+
+
+

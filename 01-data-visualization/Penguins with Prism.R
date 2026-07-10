@@ -1,7 +1,6 @@
 library(tidyverse)
 library(palmerpenguins)
 library(ggprism)
-library(camcorder)
 library(readxl)
 library(plotly)
 
