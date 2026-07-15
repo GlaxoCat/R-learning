@@ -430,3 +430,29 @@ final_table %>%
 # # ==========================================
 # # FINAL FINAL EDITS!
 # # ==========================================
+
+max_intensity <- list(c("Cluster", "Non cluster"))
+final_table %>%
+  filter(Image_ID == "image14") %>%
+  ggplot(aes(
+    x = Spot_Category,
+    y = Max_Intensity,
+    fill = Spot_Category,
+    color = Spot_Category
+  )) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
+  labs(
+    title = "Cluster vs. Non-cluster Plastics Max Intensity in Image 14",
+    x = "Spot Category",
+    y = "Max Intensity"
+  ) +
+  theme_prism(base_size = 14) +
+  scale_fill_prism(palette = "prism_light") +
+  scale_color_prism(palette = "prism_light") +
+
+  stat_compare_means(
+    comparisons = max_intensity,
+    method = "t.test",
+    label = "p.signif"
+  )
